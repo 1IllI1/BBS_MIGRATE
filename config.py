@@ -4,18 +4,18 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
+    SECRET_KEY ='hard to guess string'
     SSL_DISABLE = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.163.com')
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', '@163.com')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'emailcheck@163.com')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '1bbsemailcheck')
     UP_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),"static\\uploads")
     PAGE_SET = 10
-    #MAIL_PORT = 25
-    #MAIL_USE_TLS = True
+    MAIL_PORT = 465
+    MAIL_USE_SSL = True
     #FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
     #FLASKY_MAIL_SENDER = 'Flasky Admin <1348313766@qq.com>'
     #FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')

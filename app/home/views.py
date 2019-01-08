@@ -39,9 +39,9 @@ def index():
     current_user_id = 0
     current_user_name =""
     if "user" in session:
-        current_user_id = session["user_id"]
-        current_user_name = session["user"]
-
+       current_user_name = session["user"]
+       user = User.query.filter_by(name=current_user_name).first()
+       current_user_id = user.id
     page_index = request.args.get('page', 1, type=int)
     query = Post.query.join(User).filter(User.id == Post.user_id).order_by(Post.addtime.desc())
     pagination = query.paginate(page_index, per_page=10, error_out=False)
@@ -52,7 +52,9 @@ def index():
 @user_login_req
 def index_del():
     #获取当前登录用户id
-    current_user_id = session["user_id"]
+    current_user_name = session["user"]
+    user = User.query.filter_by(name=current_user_name).first()
+    current_user_id = user.id
     index_id = request.args.get("id", '0')
     post = Post.query.get_or_404(int(index_id))
     if post.user_id != current_user_id:
@@ -69,7 +71,9 @@ def index_del():
 @user_login_req
 def index_col():
     #获取当前登录用户id
-    current_user_id = session["user_id"]
+    current_user_name = session["user"]
+    user = User.query.filter_by(name=current_user_name).first()
+    current_user_id = user.id
     index_id = request.args.get("id", '0')
     col_check = Col.query.filter_by(id=index_id).count()
     if col_check == 0:
@@ -89,7 +93,9 @@ def index_col():
 @user_login_req
 def play_col():
     #获取当前登录用户id
-    current_user_id = session["user_id"]
+    current_user_name = session["user"]
+    user = User.query.filter_by(name=current_user_name).first()
+    current_user_id = user.id
     index_id = request.args.get("id", '0')
     col_check = Col.query.filter_by(id=index_id).count()
     if col_check == 0:
@@ -138,6 +144,7 @@ def user_login():
     if form.validate_on_submit():
         data = form.data
         user = User.query.filter_by(name=data["name"]).first()
+        print("登录按钮被点击")
         # if session.get('image').lower() != form.verify_code.data.lower():
         #     flash('验证码错误')
         #     return render_template('home/user_login.html', form=form)
@@ -147,7 +154,7 @@ def user_login():
                 flash("用户名或密码错误！")
                 return redirect(url_for("home.user_login"))
             session["user"] = data["name"]
-            session["user_id"] = user.id
+            #session["user_id"] = user.id
             userloginlog = UserLoginLog(
             user_id=user.id,
             ip=request.remote_addr,
@@ -166,7 +173,6 @@ def user_login():
 @user_login_req
 def logout():
     session.pop("user")
-    session.pop("user_id")
     return redirect(url_for("home.user_login"))
 
 
@@ -211,7 +217,7 @@ def change_filename(filename):
 @user_login_req
 def user():
     form = UserdetailForm()
-    user = User.query.get(int(session["user_id"]))
+    user = User.query.filter_by(name=(session["user"])).first()
     if user.face is not None:
         form.face.validators = []
     if request.method == "GET":
@@ -226,13 +232,14 @@ def user():
         #     flash("用户名已被占用")
         #     return redirect(url_for("home.user"))
         if request.method == 'POST':
-            if request.files['file']:
-                file = request.files['file']
+            if request.files['imageup']:
+                file = request.files("imageup")
                 print("获取文件成功")
-                filename = secure_filename(str(hash(file.filename)))+session["user"]+".jpg"
+                filename = secure_filename(str(hash(file.filename)))+str(user.id)+".jpg"
                 print("secure成功"+filename)
                 del_face = user.face
-                file.save(os.path.join(current_app.config['UP_DIR']  + os.sep+"users", filename))
+                file.save(os.path.join(current_app.config['UP_DIR']+os.sep+"users",filename))
+                print("上传成功" + filename)
                 #os.remove(os.path.join(app.config['UP_DIR']  + os.sep+"users", del_face))
                 print("删除文件"+del_face+"成功")
                 user.face = filename
@@ -267,12 +274,11 @@ def pwd():
 @home.route("/comments/")
 @user_login_req
 def comments():
-    user_id = session["user_id"]
-    user=User.query.filter_by(id=user_id).first()
     user_name = session["user"]
+    user = User.query.filter_by(name=user_name).first()
     page = request.args.get('page', 1, type=int)
     # query = Comment.query.order_by(Comment.addtime.desc())
-    query = Comment.query.filter(Comment.user_id == user_id).order_by(Comment.addtime.desc())
+    query = Comment.query.filter(Comment.user_id == user.id).order_by(Comment.addtime.desc())
     pagination = query.paginate(page, per_page=10, error_out=False)
     comments = pagination.items
     return render_template('home/comments.html', user=user,user_name=user_name, comments=comments,pagination=pagination)
@@ -292,8 +298,9 @@ def comment_del():
 @home.route("/postrecords/")
 @user_login_req
 def postrecords():
-    user_id = session["user_id"]
     user_name = session["user"]
+    user = User.query.filter_by(name=user_name).first()
+    user_id = user.id
     user = User.query.filter_by(id=user_id).first()
     page = request.args.get('page', 1, type=int)
     # query = Comment.query.order_by(Comment.addtime.desc())
@@ -320,8 +327,10 @@ def post_del():
 @home.route("/loginlog/", methods=["POST", "GET"])
 @user_login_req
 def loginlog():
+    current_user_name = session["user"]
+    user = User.query.filter_by(name=current_user_name).first()
     user_login_log = UserLoginLog.query.filter_by(
-        user_id=session["user_id"]
+        user_id=user.id
 
     ).order_by(
         UserLoginLog.addtime.desc()
@@ -332,7 +341,9 @@ def loginlog():
 @home.route("/col/del/")
 @user_login_req
 def col_del():
-    current_user_id = session["user_id"]
+    current_user_name = session["user"]
+    user= User.query.filter_by(name=current_user_name).first()
+    current_user_id = user.id
     col_id = request.args.get("id", '')
     col = Col.query.get_or_404(int(col_id))
     if col.user_id != current_user_id:
@@ -348,7 +359,9 @@ def col_del():
 @home.route("/col/")
 @user_login_req
 def col():
-    user_id = session['user_id']
+    current_user_name = session["user"]
+    user = User.query.filter_by(name=current_user_name).first()
+    user_id = user.id
     # 获取当前分页页面编号（编号，默认值，类型）
     page = request.args.get('page', 1, type=int)
     # 从数据库中查找对应用户的收藏
@@ -379,8 +392,9 @@ def search():
     current_user_id = 0
     current_user_name = ""
     if "user" in session:
-        current_user_id = session["user_id"]
         current_user_name = session["user"]
+        user = User.query.filter_by(name=current_user_name).first()
+        current_user_id = user.id
     # 获取查询的内容
     # search=request.args.get("search",'',type=str)
     search = request.args.get("search", "搜索结果为空")
@@ -418,13 +432,14 @@ def play():
     current_user_name = '游客'
     if "user" in session:
         current_user_name = session["user"]
-        current_user_id= session["user_id"]
+        user = User.query.filter_by(name=current_user_name).first()
+        current_user_id = user.id
     # 若用户登录则显示评论发布表单
     if "user" in session and form.validate_on_submit():
         comment = Comment(
             content=form.data["content"],
             post_id=int(post_id),
-            user_id=session["user_id"],
+            user_id=current_user_id,
             addtime=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         )
         db.session.add(comment)
@@ -450,12 +465,14 @@ def play():
 def post():
     form = PostForm()
     current_user_name = session["user"]
+    user = User.query.filter_by(name=current_user_name).first()
+    current_user_id = user.id
     if form.validate_on_submit():
         data = form.data
         post = Post(
             title=data["title"],
             content=data["content"],
-            user_id=session["user_id"],
+            user_id=current_user_id,
             addtime=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         )
         db.session.add(post)
