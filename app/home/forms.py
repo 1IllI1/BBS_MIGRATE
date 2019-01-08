@@ -7,7 +7,7 @@ from app.models import User
 class RegistForm(FlaskForm):
     name = StringField(
         label="昵称",
-        validators=[DataRequired("请输入昵称")],
+        validators=[DataRequired("请输入昵称"),Regexp("[a-zA-Z0-9\u4e00-\u9fa5]{1,10}$",message="请输入10个字符以内的昵称")],
         description="昵称",
         render_kw={
             "class": "form-control input-lg",
@@ -27,7 +27,7 @@ class RegistForm(FlaskForm):
 
     phone = StringField(
         label="手机",
-        validators=[DataRequired("请输入手机"), ],
+        validators=[DataRequired("请输入手机"),Regexp("^1[3|4|5|7|8][0-9]{9}$", message="手机号码格式不正确！")],
         description="手机",
         render_kw={
             "class": "form-control input-lg",

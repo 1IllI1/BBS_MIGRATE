@@ -127,6 +127,48 @@ def user_list(page=None):
     ).paginate(page=page, per_page=13)
     return render_template("admin/user_list.html", page_data=page_data)
 
+#搜索用户
+@admin.route('user/list/search/<int:page>/', methods=["GET"])
+@admin_login_req
+def user_list_search(page=None):
+    # 获取查询的内容
+    search = request.args.get("search", "搜索结果为空")
+    print("搜索用户"+search)
+    if page is None:
+        page = 1
+    users =User.query.filter(User.name.ilike('%' + search + '%')).order_by(User.addtime.desc())
+    page_data = users.paginate(page=page, per_page=13)
+    return render_template("admin/user_list_search.html", page_data=page_data)
+
+
+#搜索评论
+@admin.route('user/post/search/<int:page>/', methods=["GET"])
+@admin_login_req
+def post_list_search(page=None):
+    # 获取查询的内容
+    search = request.args.get("search", "搜索结果为空")
+    print("搜索评论"+search)
+    if page is None:
+        page = 1
+    posts =Post.query.filter(Post.title.ilike('%' + search + '%')).order_by(Post.addtime.desc())
+    #posts2 = Post.query.filter(Post.content.ilike('%' + search + '%')).order_by(Comment.addtime.desc())
+    page_data = posts.paginate(page=page, per_page=13)
+    return render_template("admin/post_list_search.html", page_data=page_data)
+
+#搜索评论
+@admin.route('user/comment/search/<int:page>/', methods=["GET"])
+@admin_login_req
+def comment_list_search(page=None):
+    # 获取查询的内容
+    search = request.args.get("search", "搜索结果为空")
+    print("搜索评论"+search)
+    if page is None:
+        page = 1
+    comments =Comment.query.filter(Comment.content.ilike('%' + search + '%')).order_by(Comment.addtime.desc())
+    page_data = comments.paginate(page=page, per_page=13)
+    return render_template("admin/comment_list_search.html", page_data=page_data)
+
+
 # 定义查看会员视图
 @admin.route("/user/view/<int:id>/", methods=["GET"])
 @admin_login_req
@@ -134,7 +176,6 @@ def user_view(id=None):
     user = User.query.get_or_404(id)
     page = page_data.page if page_data is not None else 1
     return render_template("admin/user_view.html", user=user, page=page)
-
 
 # 定义会员删除视图
 @admin.route("/user/del/<int:id>/", methods=["GET"])

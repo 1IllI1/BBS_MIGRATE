@@ -35,7 +35,7 @@ class DevelopmentConfig(Config):
     #     'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
     HOSTNAME = '127.0.0.1'
     PORT = '3306'
-    DATABASE = 'bbs_test'
+    DATABASE = 'bbs_dev'
     USERNAME = 'root'
     PASSWORD = 'root'
     # dialect+driver://username:password@host:port/database
