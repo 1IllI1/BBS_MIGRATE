@@ -90,8 +90,8 @@ def logout():
 @admin.route("/admin/add/", methods=["GET", "POST"])
 @admin_login_req
 def admin_add():
-    if session["admin_id"] != 1:
-        return redirect(url_for("admin.index"))
+   # if session["admin_id"] != 1:
+     #   return redirect(url_for("admin.index"))
     form = AdminForm()
     if form.validate_on_submit():
         data = form.data

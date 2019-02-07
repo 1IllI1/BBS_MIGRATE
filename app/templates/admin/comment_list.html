@@ -24,7 +24,8 @@
                                        placeholder="请输入评论关键字...">
 
                                 <div class="input-group-btn">
-                                    <button type="submit" id="do_search" class="btn btn-default"><i class="fa fa-search"></i>
+                                    <button type="submit" id="do_search" class="btn btn-default"><i
+                                            class="fa fa-search"></i>
                                     </button>
                                 </div>
                             </div>
@@ -86,9 +87,9 @@
             $("#g-6").addClass("active");
             $("#g-6-1").addClass("active");
             $("#do_search").click(function () {
-            var key = $("#key_post").val()
-            location.href = "{{ url_for('admin.comment_list_search',page=1) }}?search=" + key;
-        })
+                var key = $("#key_post").val()
+                location.href = "{{ url_for('admin.comment_list_search',page=1) }}?search=" + key;
+            })
         });
     </script>
 {% endblock %}

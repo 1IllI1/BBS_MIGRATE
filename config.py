@@ -11,8 +11,8 @@ class Config:
     SQLALCHEMY_RECORD_QUERIES = True
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.163.com')
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'emailcheck@163.com')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '')
-    UP_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),"static\\uploads")
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '1bbsemailcheck')
+    UP_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),"app\\static\\uploads")
     PAGE_SET = 10
     MAIL_PORT = 465
     MAIL_USE_SSL = True
@@ -35,7 +35,7 @@ class DevelopmentConfig(Config):
     #     'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
     HOSTNAME = '127.0.0.1'
     PORT = '3306'
-    DATABASE = 'bbs_dev'
+    DATABASE = 'bbs_test'
     USERNAME = 'root'
     PASSWORD = 'root'
     # dialect+driver://username:password@host:port/database

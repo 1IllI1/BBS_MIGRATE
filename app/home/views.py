@@ -233,7 +233,7 @@ def user():
         #     return redirect(url_for("home.user"))
         if request.method == 'POST':
             if request.files['imageup']:
-                file = request.form.files("imageup")
+                file = request.files['imageup']
                 print("获取文件成功")
                 filename = secure_filename(str(hash(file.filename)))+str(user.id)+".jpg"
                 print("secure成功"+filename)
